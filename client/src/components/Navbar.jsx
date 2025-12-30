@@ -1,15 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { logout, reset } from '../redux/authSlice';
+import { useContext } from 'react';
+import AuthContext from '../context/AuthContext'; 
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+  const { user, logout } = useContext(AuthContext);
 
   const onLogout = () => {
-    dispatch(logout());
-    dispatch(reset());
+    logout(); 
     navigate('/');
   };
 
@@ -28,10 +26,7 @@ const Navbar = () => {
           </Link>
 
           {user ? (
-            //USER IS LOGGED IN 
             <div className="flex items-center gap-4">
-              
-              {/* VENDOR LINK: Only visible to Vendors */}
               {(user.role === 'vendor' || user.role === 'admin') && (
                 <Link 
                   to="/admin/dashboard" 
@@ -57,7 +52,6 @@ const Navbar = () => {
               </button>
             </div>
           ) : (
-            //GUEST (LOGGED OUT)
             <div className="flex items-center gap-4">
               <Link 
                 to="/login" 

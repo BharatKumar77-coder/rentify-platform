@@ -2,29 +2,30 @@ import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../utils/axiosConfig'; 
 import toast, { Toaster } from 'react-hot-toast';
-import AuthContext from '../context/AuthContext'; // Import Auth Context
+import AuthContext from '../context/AuthContext'; 
 
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext); // Get logged-in user data
+  
+  const authContext = useContext(AuthContext);
+  const user = authContext ? authContext.user : null;
   
   const [item, setItem] = useState(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Fetch Item Details
+  // Fetch Item
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        // Ideally, create a specific route /equipment/:id to save bandwidth
-        // But this works with your current setup
         const { data } = await axios.get('/equipment'); 
         const found = data.find((p) => p._id === id);
-        setItem(found);
+        setItem(found || null); 
         setLoading(false);
       } catch (error) {
+        console.error("Fetch Error:", error);
         toast.error('Failed to load item');
         setLoading(false);
       }
@@ -34,6 +35,12 @@ const ProductDetails = () => {
 
   const handleBooking = async (e) => {
     e.preventDefault();
+    if (!user) {
+      toast.error("Please login to book items");
+      setTimeout(() => navigate('/login'), 1500);
+      return;
+    }
+
     try {
       await axios.post('/bookings', {
         equipmentId: id,
@@ -41,21 +48,29 @@ const ProductDetails = () => {
         endDate
       });
       toast.success('Booking Successful!');
-      setTimeout(() => navigate('/my-bookings'), 2000); // Redirect to My Bookings
+      setTimeout(() => navigate('/mybookings'), 2000);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Booking Failed');
     }
   };
 
-  // CHECK OWNERSHIP
-  // Handles cases where item.owner is just an ID string OR a populated object
+
   const isOwner = user && item && (
     (typeof item.owner === 'string' && item.owner === user._id) || 
     (item.owner?._id === user._id)
   );
 
-  if (loading) return <div className="text-center mt-20">Loading...</div>;
-  if (!item) return <div className="text-center mt-20">Item not found</div>;
+  // console.log("User:", user);
+  // console.log("Item:", item);
+
+  if (loading) return <div className="text-center mt-20 text-gray-500">Loading details...</div>;
+  
+  if (!item) return (
+    <div className="text-center mt-20">
+      <h2 className="text-2xl font-bold text-gray-700">Item Not Found</h2>
+      <button onClick={() => navigate('/')} className="text-indigo-600 mt-4 underline">Go Back Home</button>
+    </div>
+  );
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -68,7 +83,7 @@ const ProductDetails = () => {
           <p className="text-gray-500 text-sm mt-1 uppercase tracking-wide">{item.category}</p>
           <p className="text-gray-600 mt-4 leading-relaxed">{item.description}</p>
           <p className="text-3xl text-indigo-600 font-bold mt-6">
-            ₹{item.dailyPrice.toLocaleString('en-IN')} <span className="text-base text-gray-500 font-normal">/ day</span>
+            ₹{item.dailyPrice?.toLocaleString('en-IN')} <span className="text-base text-gray-500 font-normal">/ day</span>
           </p>
         </div>
 
@@ -98,7 +113,7 @@ const ProductDetails = () => {
               />
             </div>
 
-            {/* CONDITIONAL RENDERING: Button vs Warning */}
+            {/* CONDITIONAL RENDERING */}
             {isOwner ? (
               <div className="w-full bg-red-100 border border-red-300 text-red-700 px-4 py-4 rounded text-center">
                 <strong>You own this item.</strong>
@@ -112,7 +127,6 @@ const ProductDetails = () => {
                 Confirm Booking
               </button>
             )}
-
           </form>
         </div>
       </div>

@@ -1,52 +1,37 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useEffect, useState, useContext } from 'react'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 import axios from '../../utils/axiosConfig';
 import toast, { Toaster } from 'react-hot-toast';
-
+import AuthContext from '../../context/AuthContext'; 
 const VendorDashboard = () => {
+
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
+
+  const { user } = useContext(AuthContext);
 
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
 
+  // Calculate Stats
   const calculateStats = () => {
     const approvedBookings = bookings.filter(b => b.status === 'approved');
-    
-    //Sum of all approved amounts
     const totalRevenue = approvedBookings.reduce((sum, booking) => sum + (booking.totalAmount || 0), 0);
-    
-    //Simply the count of approved bookings
     const activeRentals = approvedBookings.length;
-
     return { totalRevenue, activeRentals };
   };
 
   const { totalRevenue, activeRentals } = calculateStats();
 
-  // Fetch Vendor's own items
+  // Fetch Data Functions
   const fetchMyItems = async () => {
     try {
       const { data } = await axios.get('/equipment/myitems');
       setItems(data);
-      setIsLoading(false);
     } catch (error) {
       toast.error('Failed to load inventory');
-      setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    //Security Check: Kick out if not vendor
-    if (!user || (user.role !== 'vendor' && user.role !== 'admin')) {
-      navigate('/');
-    } else {
-      fetchMyItems();
-    }
-  }, [user, navigate]);
-
 
   const fetchVendorBookings = async () => {
     try {
@@ -56,16 +41,22 @@ const VendorDashboard = () => {
       console.error("Error fetching bookings");
     }
   };
+
   useEffect(() => {
     if (!user || (user.role !== 'vendor' && user.role !== 'admin')) {
-      navigate('/');
+      if (!user) navigate('/'); 
     } else {
-      fetchMyItems();
-      fetchVendorBookings(); 
+
+      const loadData = async () => {
+        setIsLoading(true);
+        await Promise.all([fetchMyItems(), fetchVendorBookings()]);
+        setIsLoading(false);
+      };
+      loadData();
     }
   }, [user, navigate]);
 
-  //Status Handler
+  // Status Handler
   const handleStatusUpdate = async (bookingId, newStatus) => {
     try {
       await axios.put(`/bookings/${bookingId}`, { status: newStatus });

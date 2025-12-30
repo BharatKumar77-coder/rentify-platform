@@ -7,7 +7,7 @@ import Navbar from './components/Navbar';
 import MyBookings from './pages/MyBookings';
 import VendorDashboard from './pages/admin/VendorDashboard';
 import AddProduct from './pages/admin/AddProduct';
-import { AuthProvider } from './context/AuthContext'; // It was imported, but not used!
+import { AuthProvider } from './context/AuthContext'; 
 
 function App() {
   return (
@@ -26,7 +26,7 @@ function App() {
 
             {/* Admin Routes */}
             <Route path="/admin/dashboard" element={<VendorDashboard />} />
-            <Route path="/admin/addproduct" element={<AddProduct />} />
+            <Route path="/admin/add-product" element={<AddProduct />} />
           </Routes>
         </div>
       </AuthProvider>

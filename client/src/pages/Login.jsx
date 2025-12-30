@@ -1,17 +1,14 @@
 import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from '../utils/axiosConfig'; // Direct API call
+import axios from '../utils/axiosConfig'; 
 import toast, { Toaster } from 'react-hot-toast';
-import AuthContext from '../context/AuthContext'; // We use this instead of Redux
-
+import AuthContext from '../context/AuthContext'; 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const { email, password } = formData;
 
   const navigate = useNavigate();
-  
-  // 1. Get the login function from AuthContext
-  // This function automatically saves to sessionStorage
+
   const { login } = useContext(AuthContext);
 
   const onChange = (e) => {

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getEquipment, reset } from '../redux/equipmentSlice';
 import { Link } from 'react-router-dom';
-import SearchBar from '../components/SearchBar'; // Import it
+import SearchBar from '../components/SearchBar'; 
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -26,7 +26,8 @@ const Home = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {items.map((item) => (
           <div key={item._id} className="border rounded-lg shadow-md overflow-hidden bg-white">
-            <img src={item.image} alt={item.name} className="w-full h-48 object-cover" />
+            {/* CHANGED h-48 TO h-64 HERE */}
+            <img src={item.image} alt={item.name} className="w-full h-64 object-cover" />
             <div className="p-4">
               <h2 className="text-xl font-semibold">{item.name}</h2>
               <p className="text-gray-600 text-sm mt-1">{item.category}</p>

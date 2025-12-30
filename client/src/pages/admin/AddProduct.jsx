@@ -1,16 +1,26 @@
-import { useState } from 'react';
+import { useState, useContext, useEffect } from 'react'; 
 import axios from '../../utils/axiosConfig';
 import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
+import AuthContext from '../../context/AuthContext'; 
 
 const AddProduct = () => {
   const navigate = useNavigate();
   
+  const { user } = useContext(AuthContext);
+
   const [formData, setFormData] = useState({
     name: '', category: '', description: '', dailyPrice: ''
   });
   const [imageFile, setImageFile] = useState(null); 
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!user || user.role !== 'vendor') {
+
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const { name, category, description, dailyPrice } = formData;
 
@@ -27,8 +37,7 @@ const AddProduct = () => {
     if (!imageFile) return toast.error('Please upload an image');
     
     setIsLoading(true);
-    
-    // Create FormData object
+
     const data = new FormData();
     data.append('name', name);
     data.append('category', category);
@@ -50,6 +59,8 @@ const AddProduct = () => {
     }
   };
 
+  if (!user) return null; 
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <Toaster />
@@ -66,7 +77,7 @@ const AddProduct = () => {
             <option value="">Select Category</option>
             <option value="Camera">Camera</option>
             <option value="Drone">Drone</option>
-            <option value="Drone">Laptops</option>
+            <option value="Laptops">Laptops</option> {/* Fixed Typo: Drone -> Laptops */}
           </select>
         </div>
         <div>

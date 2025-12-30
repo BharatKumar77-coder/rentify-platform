@@ -1,25 +1,27 @@
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useState, useEffect, useContext } from 'react'; // Added useContext
 import { useNavigate, Link } from 'react-router-dom';
-import { register, reset } from '../redux/authSlice';
+import axios from '../utils/axiosConfig'; // Direct API call
 import toast, { Toaster } from 'react-hot-toast';
+import AuthContext from '../context/AuthContext'; // Import AuthContext
 
 const Register = () => {
-  // Added 'role' to initial state, default is 'user'
   const [formData, setFormData] = useState({ 
       name: '', email: '', password: '', role: 'user' 
   });
   const { name, email, password, role } = formData;
+  const [isLoading, setIsLoading] = useState(false); // Local loading state
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { user, isLoading, isError, message } = useSelector((state) => state.auth);
+  
+  // 1. Get login function and user status from Context
+  const { login, user } = useContext(AuthContext);
 
+  // 2. Redirect if already logged in
   useEffect(() => {
-    if (isError) toast.error(message);
-    if (user) navigate('/'); 
-    dispatch(reset());
-  }, [user, isError, message, navigate, dispatch]);
+    if (user) {
+      navigate('/'); 
+    }
+  }, [user, navigate]);
 
   const onChange = (e) => {
     if (e.target.name === 'isVendor') {
@@ -35,9 +37,26 @@ const Register = () => {
     }
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    dispatch(register(formData));
+    setIsLoading(true);
+
+    try {
+      // 3. Call API directly (Replaces dispatch(register))
+      const { data } = await axios.post('/auth/register', formData);
+      
+      // 4. Update Context & SessionStorage
+      login(data);
+
+      toast.success('Registration Successful!');
+      setTimeout(() => navigate('/'), 1000);
+
+    } catch (error) {
+      const message = error.response?.data?.message || 'Registration failed';
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -60,7 +79,7 @@ const Register = () => {
             <input type="password" name="password" value={password} onChange={onChange} className="border w-full text-base px-2 py-1 focus:outline-none focus:ring-0 focus:border-gray-600" placeholder="••••••" />
           </div>
 
-          {/*Vendor Checkbox */}
+          {/* Vendor Checkbox */}
           <div className="mt-4 flex items-center gap-2">
             <input 
                 type="checkbox" 

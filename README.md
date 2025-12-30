@@ -23,7 +23,7 @@ A full-stack MERN application that facilitates peer-to-peer equipment renting. U
 
 
 ## 🚀 Tech Stack
-* Frontend
+#### Frontend
 
  ● React.js (Vite)
 
@@ -39,7 +39,8 @@ A full-stack MERN application that facilitates peer-to-peer equipment renting. U
 
  ● React Hot Toast (Notifications)
 
-* Backend
+#### Backend
+
  ● Node.js & Express.js (Server)
 
  ● MongoDB & Mongoose (Database)

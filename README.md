@@ -23,7 +23,8 @@ A full-stack MERN application that facilitates peer-to-peer equipment renting. U
 
 
 ## 🚀 Tech Stack
-* **Frontend**
+* Frontend
+
  ● React.js (Vite)
 
  ● Context API (Authentication state)
@@ -38,7 +39,7 @@ A full-stack MERN application that facilitates peer-to-peer equipment renting. U
 
  ● React Hot Toast (Notifications)
 
-* **Backend**
+* Backend
  ● Node.js & Express.js (Server)
 
  ● MongoDB & Mongoose (Database)
@@ -48,24 +49,3 @@ A full-stack MERN application that facilitates peer-to-peer equipment renting. U
  ● Bcryptjs (Password Hashing)
 
 
-## 📂 Project Structure
-* Here is a quick look at how the code is organized:
-
-    ├── client/                 # React Frontend
-│   ├── src/
-│   │   ├── context/        # AuthContext logic
-│   │   ├── components/     # UI components (SearchBar, Navbar)
-│   │   ├── pages/          # Views (Home, ProductDetails, Login)
-│   │   ├── redux/          # Redux slices (Equipment, Bookings)
-│   │   ├── utils/          # Axios setup & helpers
-│   │   └── App.jsx
-│   └── ...
-│
-├── server/                 # Node/Express Backend
-│   ├── config/             # DB connection
-│   ├── controllers/        # The logic behind the routes
-│   ├── models/             # Database schemas
-│   ├── routes/             # API endpoints
-│   ├── middleware/         # Auth verification
-│   └── server.js           # App entry point
-└── README.md

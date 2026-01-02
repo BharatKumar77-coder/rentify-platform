@@ -19,6 +19,12 @@ app.use('/api/equipment', equipmentRoutes);
 app.use('/api/bookings', bookingRoutes);
 
 
+// Keep-Alive Route
+app.get('/ping', (req, res) => {
+  res.status(200).send('Pong! Server is awake.');
+});
+
+
 app.use((err, req, res, next) => {
     const statusCode = res.statusCode ? res.statusCode : 500;
     res.status(statusCode);
